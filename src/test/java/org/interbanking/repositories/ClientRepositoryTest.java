@@ -3,10 +3,11 @@ package org.interbanking.repositories;
 import io.quarkus.test.junit.QuarkusTest;
 import org.interbanking.entities.Client;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.util.function.Function;
+
 
 @QuarkusTest
 class ClientRepositoryTest {
@@ -14,54 +15,48 @@ class ClientRepositoryTest {
     @Inject
     ClientRepository clientRepository;
 
-    @BeforeEach
-    void setUp() {
-    }
+    private Function<Integer, Client> clientObject = (id) -> new Client("name" + id, "lastname" + id, "email" + id,
+            "phone" + id, "address" + id, "rut" + id, "enterpriseId" + id);
 
     @Test
-    void createdClient() {
-        Client client = new Client();
-        client.setName("Test");
-        client.setAddress("Test");
-        client.setEmail("Test");
-        client.setEnterpriseId("Test");
-        client.setLastname("Test");
-        client.setPhone("Test");
-        client.setRut("Test");
+    void createdClientTest() {
+        Client client = clientObject.apply(1);
         client = clientRepository.createdClient(client);
         Assertions.assertNotNull(client.getId());
     }
 
     @Test
-    void updatedClient() {
-        Client client = new Client();
-        client.setName("Test2");
-        client.setAddress("Test2");
-        client.setEmail("Test2");
-        client.setEnterpriseId("Test2");
-        client.setLastname("Test2");
-        client.setPhone("Test2");
-        client.setRut("Test2");
+    void updatedClientTest() {
+        Client client = clientObject.apply(2);
+        client = clientRepository.createdClient(client);
 
-        Client lastClient = clientRepository.listClient().get(clientRepository.listClient().size() - 1);
+        if (clientRepository.listClient().size() > 0) {
+            Client lastClient = clientRepository.listClient().get(clientRepository.listClient().size() - 1);
 
-        client = clientRepository.updatedClient(client, lastClient.getId());
-        Assertions.assertNotNull(client);
+            client = clientRepository.updatedClient(client, lastClient.getId());
+            Assertions.assertNotNull(client, "Client not updated");
 
-        client = clientRepository.updatedClient(client, lastClient.getId() + 1);
-        Assertions.assertNull(client);
+            client = clientRepository.updatedClient(client, lastClient.getId() + 1);
+            Assertions.assertNull(client, "Client not exist");
+        }
     }
 
     @Test
-    void deleteClient() {
-        Client deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId());
-        Assertions.assertNotNull(deleted);
+    void deleteClientTest() {
+        if (clientRepository.listClient().size() > 0) {
+            Client deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId());
+            Assertions.assertNotNull(deleted);
 
-        deleted = clientRepository.findClientById(deleted.getId());
-        Assertions.assertNull(deleted);
+            deleted = clientRepository.findClientById(deleted.getId());
+            Assertions.assertNull(deleted);
 
-        deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId() + 1);
-        Assertions.assertNull(deleted);
+            if (clientRepository.listClient().size() > 0) {
+                deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId() + 1);
+                Assertions.assertNull(deleted);
+            }
+        } else {
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test

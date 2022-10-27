@@ -10,7 +10,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.List;
 
 @Path("/clients")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,11 +22,11 @@ public class BackendClients {
     @POST
     @RolesAllowed({"admin", "user"})
     public Response createdClient(Client client) {
-        client = clientRepository.createdClient(client);
-        if (client == null) {
-            return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(client).build();
+        try {
+            client = clientRepository.createdClient(client);
+            return client == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(client).build();
+        } catch (Exception e) {
+            return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();
         }
     }
 
@@ -37,13 +36,9 @@ public class BackendClients {
     public Response updatedClient(Client client, @PathParam("id") Long id) {
         try {
             client = clientRepository.updatedClient(client, id);
-            if (client == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            } else {
-                return Response.ok(client).build();
-            }
+            return client == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(client).build();
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Status.BAD_REQUEST);
+            return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();
         }
     }
 
@@ -53,20 +48,20 @@ public class BackendClients {
     public Response deleteClient(@PathParam("id") Long id) {
         try {
             Client client = clientRepository.deleteClient(id);
-            if (client == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            } else {
-                return Response.ok(client).build();
-            }
+            return client == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(client).build();
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Status.BAD_REQUEST);
+            return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();
         }
     }
 
     @GET
     @PermitAll
-    public List<Client> listClient() {
-        return clientRepository.listClient();
+    public Response listClient() {
+        try {
+            return Response.ok(clientRepository.listClient()).build();
+        } catch (Exception e) {
+            return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();
+        }
     }
 
 
@@ -74,11 +69,11 @@ public class BackendClients {
     @Path("/{id}")
     @PermitAll
     public Response findClientById(@PathParam("id") Long id) {
-        Client client = clientRepository.findClientById(id);
-        if (client == null) {
-            return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(client).build();
+        try {
+            Client client = clientRepository.findClientById(id);
+            return client == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(client).build();
+        } catch (Exception e) {
+            return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();
         }
     }
 }

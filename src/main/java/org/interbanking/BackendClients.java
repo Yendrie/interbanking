@@ -30,9 +30,14 @@ public class BackendClients {
     @RolesAllowed({"admin", "user"})
     public Client updatedClient(Client client, @PathParam("id") Long id) {
         try {
-            return clientRepository.updatedClient(client, id);
+            client = clientRepository.updatedClient(client, id);
+            if (client == null) {
+                throw new WebApplicationException("Client Not Found", Response.Status.NOT_FOUND);
+            } else {
+                return client;
+            }
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
+            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
         }
     }
 
@@ -41,9 +46,14 @@ public class BackendClients {
     @RolesAllowed({"admin", "user"})
     public Client deleteClient(@PathParam("id") Long id) {
         try {
-            return clientRepository.deleteClient(id);
+            Client client = clientRepository.deleteClient(id);
+            if (client == null) {
+                throw new WebApplicationException("Client Not Found", Response.Status.NOT_FOUND);
+            } else {
+                return client;
+            }
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.NOT_FOUND);
+            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
         }
     }
 

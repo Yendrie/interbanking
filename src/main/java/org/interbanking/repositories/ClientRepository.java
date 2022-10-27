@@ -6,7 +6,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static io.smallrye.openapi.api.util.MergeUtil.mergeObjects;
@@ -27,7 +26,7 @@ public class ClientRepository {
     public Client updatedClient(Client client, Long id) {
         Client clientdb = em.find(Client.class, id);
         if (clientdb == null) {
-            throw new RuntimeException("Client not found");
+            return null;
         }
         Client result = mergeObjects(clientdb, client);
         em.persist(result);
@@ -38,7 +37,7 @@ public class ClientRepository {
     public Client deleteClient(Long id) {
         Client clientdb = em.find(Client.class, id);
         if (clientdb == null) {
-            throw new RuntimeException("Client not found");
+            return null;
         }
         clientdb = em.merge(clientdb);
         em.remove(clientdb);
@@ -48,5 +47,10 @@ public class ClientRepository {
     @Transactional
     public List<Client> listClient() {
         return em.createQuery("select p from Client p").getResultList();
+    }
+
+    @Transactional
+    public Client findClientById(Long id) {
+        return em.find(Client.class, id);
     }
 }

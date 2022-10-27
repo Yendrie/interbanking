@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
 @Path("/clients")
@@ -21,39 +22,44 @@ public class BackendClients {
 
     @POST
     @RolesAllowed({"admin", "user"})
-    public Client createdClient(Client client) {
-        return clientRepository.createdClient(client);
+    public Response createdClient(Client client) {
+        client = clientRepository.createdClient(client);
+        if (client == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(client).build();
+        }
     }
 
     @PATCH
     @Path("/{id}")
     @RolesAllowed({"admin", "user"})
-    public Client updatedClient(Client client, @PathParam("id") Long id) {
+    public Response updatedClient(Client client, @PathParam("id") Long id) {
         try {
             client = clientRepository.updatedClient(client, id);
             if (client == null) {
-                throw new WebApplicationException("Client Not Found", Response.Status.NOT_FOUND);
+                return Response.status(Status.NOT_FOUND).build();
             } else {
-                return client;
+                return Response.ok(client).build();
             }
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(e.getMessage(), Status.BAD_REQUEST);
         }
     }
 
     @DELETE
     @Path("/{id}")
     @RolesAllowed({"admin", "user"})
-    public Client deleteClient(@PathParam("id") Long id) {
+    public Response deleteClient(@PathParam("id") Long id) {
         try {
             Client client = clientRepository.deleteClient(id);
             if (client == null) {
-                throw new WebApplicationException("Client Not Found", Response.Status.NOT_FOUND);
+                return Response.status(Status.NOT_FOUND).build();
             } else {
-                return client;
+                return Response.ok(client).build();
             }
         } catch (Exception e) {
-            throw new WebApplicationException(e.getMessage(), Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(e.getMessage(), Status.BAD_REQUEST);
         }
     }
 
@@ -61,5 +67,18 @@ public class BackendClients {
     @PermitAll
     public List<Client> listClient() {
         return clientRepository.listClient();
+    }
+
+
+    @GET
+    @Path("/{id}")
+    @PermitAll
+    public Response findClientById(@PathParam("id") Long id) {
+        Client client = clientRepository.findClientById(id);
+        if (client == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(client).build();
+        }
     }
 }

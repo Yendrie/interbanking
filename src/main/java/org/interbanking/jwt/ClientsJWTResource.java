@@ -16,7 +16,7 @@ public class ClientsJWTResource {
     ClientsJWTService clientsJWTService;
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getJWT() {
         return Response.ok(clientsJWTService.generateJwt()).build();
     }

@@ -47,7 +47,7 @@ public class BackendClients {
     @RolesAllowed({"admin", "user"})
     public Response deleteClient(@PathParam("id") Long id) {
         try {
-            Client client = clientRepository.deleteClient(id);
+            Client client = clientRepository.deleteClientById(id);
             return client == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(client).build();
         } catch (Exception e) {
             return Response.status(Status.BAD_REQUEST.getStatusCode(), e.getMessage()).build();

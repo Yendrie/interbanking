@@ -44,14 +44,14 @@ class ClientRepositoryTest {
     @Test
     void deleteClientTest() {
         if (clientRepository.listClient().size() > 0) {
-            Client deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId());
+            Client deleted = clientRepository.deleteClientById(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId());
             Assertions.assertNotNull(deleted);
 
             deleted = clientRepository.findClientById(deleted.getId());
             Assertions.assertNull(deleted);
 
             if (clientRepository.listClient().size() > 0) {
-                deleted = clientRepository.deleteClient(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId() + 1);
+                deleted = clientRepository.deleteClientById(clientRepository.listClient().get(clientRepository.listClient().size() - 1).getId() + 1);
                 Assertions.assertNull(deleted);
             }
         } else {

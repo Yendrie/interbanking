@@ -25,28 +25,24 @@ public class ClientRepository {
     @Transactional
     public Client updatedClient(Client client, Long id) {
         Client clientdb = em.find(Client.class, id);
-        if (clientdb == null) {
-            return null;
-        }
-        Client result = mergeObjects(clientdb, client);
-        em.persist(result);
-        return result;
+        return clientdb == null ? null : createdClient(mergeObjects(clientdb, client));
     }
 
     @Transactional
-    public Client deleteClient(Long id) {
+    public Client deleteClientById(Long id) {
         Client clientdb = em.find(Client.class, id);
-        if (clientdb == null) {
-            return null;
-        }
-        clientdb = em.merge(clientdb);
-        em.remove(clientdb);
+        return clientdb == null ? null : deleteClient(clientdb);
+    }
+
+    @Transactional
+    public Client deleteClient(Client clientdb) {
+        em.remove(em.merge(clientdb));
         return clientdb;
     }
 
     @Transactional
     public List<Client> listClient() {
-        return em.createQuery("select p from Client p").getResultList();
+        return em.createQuery("select p from Client p", Client.class).getResultList();
     }
 
     @Transactional

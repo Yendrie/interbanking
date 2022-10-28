@@ -15,7 +15,7 @@ class ClientRepositoryTest {
     @Inject
     ClientRepository clientRepository;
 
-    private Function<Integer, Client> clientObject = (id) -> new Client("name" + id, "lastname" + id, "email" + id,
+    private final Function<Integer, Client> clientObject = (id) -> new Client("name" + id, "lastname" + id, "email" + id,
             "phone" + id, "address" + id, "rut" + id, "enterpriseId" + id);
 
     @Test
